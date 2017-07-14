@@ -9,7 +9,7 @@ var assert = chai.assert;
 
 var m = require('../lib/merge');
 
-describe('#merge() tests', function () {
+describe('#mergeObjects() tests', function () {
     it("empty input", function () {
         assert.deepEqual(m.merge([]), {source: 'merge'});
     });
@@ -19,18 +19,18 @@ describe('#merge() tests', function () {
     });
 
     it("single", function () {
-        assert.deepEqual(m.merge([ {source: 'file', a: 1, b: 2}]), {source: 'merge', a: 1, b: 2});
+        assert.deepEqual(m.merge([ {source: 'tags', a: 1, b: 2}]), {source: 'merge', a: 1, b: 2});
     });
 
     it("single and bogus", function () {
-        assert.deepEqual(m.merge([ {source: 'file', a: 1, b: 2},  {source: 'bogus', a: 3}]), {source: 'merge', a: 1, b: 2});
+        assert.deepEqual(m.merge([ {source: 'tags', a: 1, b: 2},  {source: 'bogus', a: 3}]), {source: 'merge', a: 1, b: 2});
     });
 
     it("two values", function () {
-        assert.deepEqual(m.merge([ {source: 'upload', a: 1, b: 3},  {source: 'file', a: 2}]), {source: 'merge', a: 1, b: 3});
+        assert.deepEqual(m.merge([ {source: 'tags', a: 1, b: 3},  {source: 'tags', a: 2}]), {source: 'merge', a: 1, b: 3});
     });
 
     it("three values", function () {
-        assert.deepEqual(m.merge([ {source: 'upload', a: 1, b: 3},  {source: 'reference', a: 4}, {source: 'file', a: 2}]), {source: 'merge', a: 4, b: 3});
+        assert.deepEqual(m.merge([ {source: 'tags', a: 1, b: 3},  {source: 'reference', a: 4}, {source: 'tags', a: 2}]), {source: 'merge', a: 4, b: 3});
     });
 });

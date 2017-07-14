@@ -1,9 +1,10 @@
 
-var m = require('lib/merge');
-var mp3Read = require('lib/metadataMp3Read');
-var mp3Write = require('lib/metdataMp3Write');
-var upload = require('lib/metadataFromUpload');
-var f = require('lib/filesLocal');
+var mergeObjects = require('./lib/merge').merge;
+var extractMp3Meta = require('./lib/metadataMp3Read').parseMetadata;
+var writeMp3MetaTags = require('./lib/metadataMp3Write').write;
+var f = require('./lib/filesLocal');
+var extractFilenameMeta = require('./lib/metadataFromFilename').parseMetadata;
+var util = require('util');
 
 var mp3Extension = '.mp3';
 var jsonExtension = '.json';
@@ -13,23 +14,28 @@ var jsonExtension = '.json';
    - get metadata from mp3
    - get metadata from upload
 
- then merge metadata objects
+ then mergeObjects metadata objects
 
  then [ parallel ]
    - write merged data into mp3
    - write merged data to json file
  */
 
-var fileName = '123';
+var fileName = '20060604am';
 
-Promise.all([
-        mp3Read.read(fileName + mp3Extension),
-        upload.read(fileName + mp3Extension)
-    ])
-    .then(m.merge)
-    .then(function (metadata) {
-        return Promise.all([
-            f.writeFile(fileName + jsonExtension, metadata),
-            mp3Write.write(fileName + mp3Extension, metadata)
-        ]);
-    });
+function logObject(data) {
+    console.log(util.inspect(data));
+    return data;
+}
+
+var readStream = f.readFileStream(fileName + mp3Extension);
+
+Promise.all([readStream.then(extractMp3Meta), extractFilenameMeta(fileName + mp3Extension)])
+    .then(logObject)
+    .then(mergeObjects)
+    .then(logObject)
+    .then(function (data) {
+        return Promise.all([ f.writeFile(data, fileName + jsonExtension), writeMp3MetaTags(data, fileName + mp3Extension) ]);
+    })
+    .then(logObject)
+    .catch(console.error);
