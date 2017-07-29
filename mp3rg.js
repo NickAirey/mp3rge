@@ -2,8 +2,8 @@
 var mergeObjects = require('./lib/merge').merge;
 var extractMp3Meta = require('./lib/metadataMp3Read').parseMetadata;
 var writeMp3MetaTags = require('./lib/metadataMp3Write').write;
-var fLocal = require('./lib/filesLocal');
-//var fS3 = require('./lib/filesS3');
+var files = require('./lib/filesLocal');
+//var files = require('./lib/filesS3');
 var extractFilenameMeta = require('./lib/metadataFromFilename').parseMetadata;
 var getReferenceMetadata = require('./lib/metadataReference').getReferenceMetadata;
 var util = require('util');
@@ -33,7 +33,7 @@ function logObject(data) {
 
 function processFile(fileName) {
     return Promise.all([
-            fLocal.readFileStream(fileName + mp3Extension).then(extractMp3Meta),
+            files.readFileStream(fileName + mp3Extension).then(extractMp3Meta),
             extractFilenameMeta(fileName + mp3Extension),
             getReferenceMetadata(fileName)
         ])
@@ -41,8 +41,8 @@ function processFile(fileName) {
         .then(logObject)
         .then(function (data) {
             return Promise.all([
-                fLocal.writeFile(data, fileName + jsonExtension)
-                // write mp3 tags
+                files.writeFile(data, fileName + jsonExtension),
+                writeMp3MetaTags(data, fileName + mp3Extension)
             ]);
         })
         .then(logObject)
