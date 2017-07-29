@@ -46,3 +46,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+*.mp3
+2*.json
+/data.json
