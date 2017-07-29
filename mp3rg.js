@@ -24,8 +24,6 @@ var jsonExtension = '.json';
    - write merged data to json file
  */
 
-var fileName = '20060604am';
-
 function logObject(data) {
     console.log(util.inspect(data));
     return data;
@@ -49,8 +47,12 @@ function processFile(fileName) {
         .catch(console.error);
 }
 
-console.log('processing: ' + fileName);
-processFile(fileName).then(function() {
-    console.log('done: '+fileName);
-});
+var fileName = process.argv[2];
+
+if (fileName) {
+    console.log('processing: ' + fileName);
+    processFile(fileName).then(function () {
+        console.log('done: ' + fileName);
+    });
+}
 
